@@ -1,0 +1,19 @@
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.app.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./build",
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": [
+        "./inertia/lib/*"
+      ]
+    }
+  },
+  "exclude": [
+    "./inertia/**/*",
+    "node_modules",
+    "build"
+  ]
+}

@@ -1,0 +1,519 @@
+openapi: 3.0.3
+
+info:
+  title: Cisco Broadworks XSI Events
+  description: Title
+  version: 2.0.0
+
+servers:
+  - url: 'https://.../com.broadsoft.xsi-events/v2.0'
+
+paths:
+  /user/{user}:
+    post:
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSubscriptionRequest'
+      responses:
+        200:
+          description: Subscription created for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSubscriptionResponse'
+  /subscription/{subscription}:
+    get:
+      responses:
+        200:
+          description: Subscription info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRefreshRequest'
+      responses:
+        200:
+          description: Subscription refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionRefreshResponse'
+    delete:
+      responses:
+        200:
+          description: Subscription deleted
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Subscription id not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  '@xmlns':
+                    $ref: '#/components/schemas/StringProperty'
+                  summary:
+                    $ref: '#/components/schemas/StringProperty'
+                  summaryEnglish:
+                    $ref: '#/components/schemas/StringProperty'
+                  errorCode:
+                    $ref: '#/components/schemas/StringProperty'
+    parameters:
+      - name: subscription
+        in: path
+        required: true
+        schema:
+          type: string
+
+components:
+  schemas:
+    CallAnsweredEvent:
+      type: object
+      required:
+        - Event
+      properties:
+        Event:
+          type: object
+          required:
+            - '@xmlns'
+            - '@xsi1:type'
+            - eventID
+            - sequenceNumber
+            - userId
+            - externalApplicationId
+            - subscriptionId
+            - httpContact
+            - targetId
+            - eventData
+          properties:
+            '@xsi1:type':
+              type: string
+            '@xmlns':
+              type: object
+              required:
+                - xsi
+                - xsi1
+              properties:
+                xsi:
+                  type: string
+                xsi1:
+                  type: string
+            eventID:
+              $ref: '#/components/schemas/StringProperty'
+            sequenceNumber:
+              $ref: '#/components/schemas/StringProperty'
+            userId:
+              $ref: '#/components/schemas/StringProperty'
+            externalApplicationId:
+              $ref: '#/components/schemas/StringProperty'
+            subscriptionId:
+              $ref: '#/components/schemas/StringProperty'
+            channelId:
+              $ref: '#/components/schemas/StringProperty'
+            targetId:
+              $ref: '#/components/schemas/StringProperty'
+            httpContact:
+              type: object
+              required:
+                - uri
+              properties:
+                uri:
+                  $ref: '#/components/schemas/StringProperty'
+            eventData:
+              type: object
+              required:
+                - "@xsi1:type"
+              properties:
+                '@xsi1:type':
+                  type: string
+                call:
+                  $ref: '#/components/schemas/CallObject'
+    CallObject:
+      type: object
+      required:
+        - callId
+        - extTrackingId
+        - personality
+        - state
+        - remoteParty
+        - endpoint
+        - appearance
+        - startTime
+        - answerTime
+      properties:
+        callId:
+          $ref: '#/components/schemas/StringProperty'
+        extTrackingId:
+          $ref: '#/components/schemas/StringProperty'
+        personality:
+          type: object
+          required:
+            - $
+          properties:
+            $:
+              type: string
+              enum:
+                - 'Click-To-Dial'
+                - Originator
+                - Terminator
+        state:
+          type: object
+          required:
+            - $
+          properties:
+            $:
+              type: string
+              enum:
+                - Active
+                - Alerting
+                - Detached
+                - Held
+                - Released
+                - 'Remote Held'
+        remoteParty:
+          type: object
+          required:
+            - name
+            - address
+            - callType
+          properties:
+            name:
+              $ref: '#/components/schemas/StringProperty'
+            address:
+              $ref: '#/components/schemas/CallAddress'
+            callType:
+              $ref: '#/components/schemas/StringProperty'
+        endpoint:
+          type: object
+          required:
+            - '@xsi1:type'
+            - addressOfRecord
+          properties:
+            '@xsi1:type':
+              type: string
+            addressOfRecord:
+              $ref: '#/components/schemas/StringProperty'
+        appearance:
+          $ref: '#/components/schemas/StringProperty'
+        startTime:
+          $ref: '#/components/schemas/StringProperty'
+        answerTime:
+          $ref: '#/components/schemas/StringProperty'
+        releaseTime:
+          $ref: '#/components/schemas/StringProperty'
+        acdCallInfo:
+          type: object
+          required:
+            - acdUserId
+            - acdName
+            - acdNumber
+            - numCallsInQueue
+            - waitTime
+            - callingPartyInfo
+          properties:
+            acdUserId:
+              $ref: '#/components/schemas/StringProperty'
+            acdName:
+              $ref: '#/components/schemas/StringProperty'
+            acdNumber:
+              $ref: '#/components/schemas/CallAddress'
+            numCallsInQueue:
+              $ref: '#/components/schemas/StringProperty'
+            waitTime:
+              $ref: '#/components/schemas/StringProperty'
+            callingPartyInfo:
+              type: object
+              required:
+                - address
+                - callType
+              properties:
+                address:
+                  $ref: '#/components/schemas/CallAddress'
+                callType:
+                  $ref: '#/components/schemas/StringProperty'
+        allowedRecordingControls:
+          $ref: '#/components/schemas/StringProperty'
+    CallAddress:
+      type: object
+      required:
+        - '$'
+        - '@countryCode'
+      properties:
+        '$':
+          type: string
+        '@countryCode':
+          type: string
+    CallObjectArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/CallObject'
+    CallSubscriptionEvent:
+      type: object
+      required:
+        - Event
+      properties:
+        Event:
+          type: object
+          required:
+            - '@xmlns'
+            - '@xsi1:type'
+            - eventID
+            - sequenceNumber
+            - userId
+            - externalApplicationId
+            - subscriptionId
+            - targetId
+            - eventData
+          properties:
+            '@xsi1:type':
+              type: string
+            '@xmlns':
+              type: object
+              required:
+                - xsi
+                - xsi1
+              properties:
+                xsi:
+                  type: string
+                xsi1:
+                  type: string
+            eventID:
+              $ref: '#/components/schemas/StringProperty'
+            sequenceNumber:
+              $ref: '#/components/schemas/StringProperty'
+            userId:
+              $ref: '#/components/schemas/StringProperty'
+            externalApplicationId:
+              $ref: '#/components/schemas/StringProperty'
+            subscriptionId:
+              $ref: '#/components/schemas/StringProperty'
+            channelId:
+              $ref: '#/components/schemas/StringProperty'
+            targetId:
+              $ref: '#/components/schemas/StringProperty'
+            eventData:
+              type: object
+              required:
+                - "@xsi1:type"
+                - hookStatus
+              properties:
+                '@xsi1:type':
+                  type: string
+                hookStatus:
+                  $ref: '#/components/schemas/StringProperty'
+                calls:
+                  oneOf:
+                    - $ref: '#/components/schemas/CallObject'
+                    - $ref: '#/components/schemas/CallObjectArray'
+    SubscriptionTerminatedEvent:
+      type: object
+      required:
+        - Event
+      properties:
+        Event:
+          type: object
+          required:
+            - "@xmlns"
+            - "@xsi1:type"
+            - eventID
+            - sequenceNumber
+            - userId
+            - externalApplicationId
+            - subscriptionId
+            - httpContact
+            - eventData
+          properties:
+            '@xsi1:type':
+              type: string
+            '@xmlns':
+              type: object
+              required:
+                - xsi
+                - xsi1
+              properties:
+                xsi:
+                  type: string
+                xsi1:
+                  type: string
+            eventID:
+              $ref: '#/components/schemas/StringProperty'
+            sequenceNumber:
+              $ref: '#/components/schemas/StringProperty'
+            userId:
+              $ref: '#/components/schemas/StringProperty'
+            externalApplicationId:
+              $ref: '#/components/schemas/StringProperty'
+            subscriptionId:
+              $ref: '#/components/schemas/StringProperty'
+            httpContact:
+              type: object
+              required:
+                - uri
+              properties:
+                uri:
+                  $ref: '#/components/schemas/StringProperty'
+            targetId:
+              $ref: '#/components/schemas/StringProperty'
+            eventData:
+              type: object
+              required:
+                - "@xsi1:type"
+              properties:
+                '@xsi1:type':
+                  type: string
+    SubscriptionResponse:
+      type: object
+      required:
+        - Subscription
+      properties:
+        Subscription:
+          type: object
+          required:
+            - '@xmlns'
+            - subscriptionId
+            - subscriberId
+            - targetIdType
+            - targetId
+            - event
+            - expires
+            - applicationId
+          properties:
+            '@xmlns':
+              $ref: '#/components/schemas/StringProperty'
+            subscriptionId:
+              $ref: '#/components/schemas/StringProperty'
+            subscriberId:
+              $ref: '#/components/schemas/StringProperty'
+            targetIdType:
+              $ref: '#/components/schemas/StringProperty'
+            targetId:
+              $ref: '#/components/schemas/StringProperty'
+            event:
+              $ref: '#/components/schemas/StringProperty'
+            expires:
+              $ref: '#/components/schemas/StringProperty'
+            channelSetId:
+              $ref: '#/components/schemas/StringProperty'
+            applicationId:
+              $ref: '#/components/schemas/StringProperty'
+    UserSubscriptionRequest:
+      type: object
+      required:
+        - Subscription
+      properties:
+        Subscription:
+          type: object
+          required:
+            - '@xmlns'
+            - subscriberId
+            - targetIdType
+            - targetId
+            - event
+            - expires
+            - httpContact
+            - applicationId
+          properties:
+            '@xmlns':
+              $ref: '#/components/schemas/StringProperty'
+            subscriberId:
+              $ref: '#/components/schemas/StringProperty'
+            targetIdType:
+              $ref: '#/components/schemas/StringProperty'
+            targetId:
+              $ref: '#/components/schemas/StringProperty'
+            event:
+              $ref: '#/components/schemas/StringProperty'
+            expires:
+              $ref: '#/components/schemas/StringProperty'
+            httpContact:
+              type: object
+              required:
+                - uri
+              properties:
+                uri:
+                  $ref: '#/components/schemas/StringProperty'
+            applicationId:
+              $ref: '#/components/schemas/StringProperty'
+    SubscriptionRefreshRequest:
+      type: object
+      required:
+        - Subscription
+      properties:
+        Subscription:
+          type: object
+          required:
+            - '@xmlns'
+            - expires
+          properties:
+            '@xmlns':
+              $ref: '#/components/schemas/StringProperty'
+            expires:
+              $ref: '#/components/schemas/StringProperty'
+    SubscriptionRefreshResponse:
+      type: object
+      required:
+        - Subscription
+      properties:
+        Subscription:
+          type: object
+          required:
+            - '@xmlns'
+            - subscriptionId
+            - expires
+          properties:
+            '@xmlns':
+              $ref: '#/components/schemas/StringProperty'
+            subscriptionId:
+              $ref: '#/components/schemas/StringProperty'
+            expires:
+              $ref: '#/components/schemas/StringProperty'
+    UserSubscriptionResponse:
+      type: object
+      required:
+        - Subscription
+      properties:
+        Subscription:
+          type: object
+          required:
+            - '@xmlns'
+            - expires
+            - subscriptionId
+          properties:
+            '@xmlns':
+              type: object
+              required:
+                - $
+              properties:
+                $:
+                  type: string
+            subscriptionId:
+              $ref: '#/components/schemas/StringProperty'
+            expires:
+              $ref: '#/components/schemas/StringProperty'
+    StringProperty:
+      type: object
+      required:
+        - $
+      properties:
+        $:
+          type: string
+
+

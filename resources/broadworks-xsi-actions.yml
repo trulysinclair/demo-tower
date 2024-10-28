@@ -1,0 +1,186 @@
+openapi: 3.0.3
+
+info:
+  title: Cisco Broadworks XSI Actions
+  description: Title
+  version: 2.0.0
+
+servers:
+  - url: 'https://.../com.broadsoft.xsi-actions/v2.0'
+
+paths:
+  /user/{user}/directories/agents:
+    parameters:
+      - name: user
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get agents directory
+      responses:
+        200:
+          description: A list of agents within user directory
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentDirectoryResponse'
+  /callcenter/{callcenter}/profile/dnis:
+    parameters:
+      - name: callcenter
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get a list of DNIS entries
+      responses:
+        200:
+          description: A list of DNIS records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcDnisResponse'
+
+components:
+  schemas:
+    AcDnisResponse:
+      type: object
+      required:
+        - ACDDNIS
+      properties:
+        ACDDNIS:
+          type: object
+          required:
+            - '@xmlns'
+            - dnisDisplaySetting
+            - dnisPrioritySetting
+            - dnisInfoList
+          properties:
+            '@xmlns':
+              $ref: '#/components/schemas/StringProperty'
+            dnisDisplaySetting:
+              type: object
+              required:
+                - displayDNISName
+                - displayDNISNumber
+              properties:
+                displayDNISName:
+                  $ref: '#/components/schemas/StringProperty'
+                displayDNISNumber:
+                  $ref: '#/components/schemas/StringProperty'
+            dnisPrioritySetting:
+              type: object
+              required:
+                - promoteCallsFromPriority1to0
+                - promoteCallsFromPriority1to0Seconds
+                - promoteCallsFromPriority2to1
+                - promoteCallsFromPriority2to1Seconds
+                - promoteCallsFromPriority3to2
+                - promoteCallsFromPriority3to2Seconds
+              properties:
+                promoteCallsFromPriority1to0:
+                  $ref: '#/components/schemas/StringProperty'
+                promoteCallsFromPriority1to0Seconds:
+                  $ref: '#/components/schemas/StringProperty'
+                promoteCallsFromPriority2to1:
+                  $ref: '#/components/schemas/StringProperty'
+                promoteCallsFromPriority2to1Seconds:
+                  $ref: '#/components/schemas/StringProperty'
+                promoteCallsFromPriority3to2:
+                  $ref: '#/components/schemas/StringProperty'
+                promoteCallsFromPriority3to2Seconds:
+                  $ref: '#/components/schemas/StringProperty'
+            dnisInfoList:
+              type: object
+              required:
+                - dnisInfo
+              properties:
+                dnisInfo:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - phoneNumber
+                      - extension
+                      - priority
+                    properties:
+                      name:
+                        $ref: '#/components/schemas/StringProperty'
+                      phoneNumber:
+                        $ref: '#/components/schemas/StringProperty'
+                      extension:
+                        $ref: '#/components/schemas/StringProperty'
+                      priority:
+                        $ref: '#/components/schemas/StringProperty'
+    AgentDirectoryResponse:
+      type: object
+      required:
+        - CallCenterAgents
+      properties:
+        CallCenterAgents:
+          type: object
+          required:
+            - callCenter
+            - '@xmlns'
+          properties:
+            '@xmlns':
+              $ref: '#/components/schemas/StringProperty'
+            callCenter:
+              type: array
+              items:
+                type: object
+                required:
+                  - serviceUserID
+                  - agentList
+                properties:
+                  serviceUserID:
+                    $ref: '#/components/schemas/StringProperty'
+                  agentList:
+                    type: object
+                    required:
+                      - userDetails
+                    properties:
+                      userDetails:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UserDetails'
+    UserDetails:
+      type: object
+      required:
+        - userId
+        - firstName
+        - lastName
+        - hiranganaFirstName
+        - hiranganaLastName
+        - extension
+        - additionalDetails
+      properties:
+        userId:
+          $ref: '#/components/schemas/StringProperty'
+        firstName:
+          $ref: '#/components/schemas/StringProperty'
+        lastName:
+          $ref: '#/components/schemas/StringProperty'
+        hiranganaFirstName:
+          $ref: '#/components/schemas/StringProperty'
+        hiranganaLastName:
+          $ref: '#/components/schemas/StringProperty'
+        number:
+          $ref: '#/components/schemas/StringProperty'
+        extension:
+          $ref: '#/components/schemas/StringProperty'
+        additionalDetails:
+          type: object
+          properties:
+            impId:
+              $ref: '#/components/schemas/StringProperty'
+    StringProperty:
+      type: object
+      required:
+        - $
+      properties:
+        $:
+          type: string
+
